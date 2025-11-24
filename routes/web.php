@@ -1,3 +1,5 @@
+<?php
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -24,4 +26,4 @@ Route::post('/register/step3', [RegisterController::class, 'complete']);
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm']);
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
 Route::post('/admin/login/verify', [AdminLoginController::class, 'verifyOtp']);
-
+?>
