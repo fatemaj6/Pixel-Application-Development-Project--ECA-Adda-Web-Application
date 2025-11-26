@@ -3,10 +3,7 @@
 
         <div class="grid md:grid-cols-4 gap-8">
 
-            @foreach (['club1.png',
-                       'club2.png',
-                       'club3.png',
-                       'club4.png'] as $img => $title)
+            @foreach (['club1.png','club2.png','club3.png','club4.png'] as $img)
 
             <div class="relative cursor-pointer overflow-hidden 
                         rounded-2xl shadow-lg group">
