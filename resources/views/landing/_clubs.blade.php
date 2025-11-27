@@ -11,10 +11,6 @@
                 <img src="/landing/images/clubs/{{ $img }}" 
                      class="w-full h-80 object-cover group-hover:scale-110 transition duration-500">
 
-                <h3 class="absolute bottom-4 left-4 text-white text-xl font-bold">
-                    {{ $title }}
-                </h3>
-
             </div>
 
             @endforeach
