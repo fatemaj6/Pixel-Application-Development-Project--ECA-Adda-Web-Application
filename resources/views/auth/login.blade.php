@@ -22,6 +22,15 @@
                 </button>
             </div>
         </form>
+
+<div class="mt-4 text-center">
+    <a href="{{ route('admin.login') }}" 
+       class="inline-block px-4 py-2 border border-gray-600 text-gray-700 rounded-lg 
+              hover:bg-gray-100 transition">
+        Admin Login
+    </a>
+</div>
+
     </div>
 </div>
 @endsection
