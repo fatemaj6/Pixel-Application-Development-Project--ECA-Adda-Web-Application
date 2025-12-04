@@ -9,11 +9,36 @@ use Illuminate\Support\Facades\Auth;
 
 class ECAController extends Controller
 {
-    // Show all ECAs
-    public function index()
+    /**
+     * Show all ECAs (with search + filters)
+     */
+    public function index(Request $request)
     {
-        $ecas = Eca::all();
-        return view('eca.index', compact('ecas'));
+        $query = Eca::query();
+
+        // Search
+        if ($request->search) {
+            $query->where('title', 'LIKE', '%' . $request->search . '%');
+        }
+
+        // Filter by category
+        if ($request->category) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter by level
+        if ($request->level) {
+            $query->where('level', $request->level);
+        }
+
+        // Dropdown values
+        $categories = Eca::select('category')->distinct()->pluck('category');
+        $levels = Eca::select('level')->distinct()->pluck('level');
+
+        // Results
+        $ecas = $query->latest()->get();
+
+        return view('eca.index', compact('ecas', 'categories', 'levels'));
     }
 
     // Show full details
@@ -22,22 +47,37 @@ class ECAController extends Controller
         $eca = Eca::findOrFail($id);
         $joined = false;
 
-        if (Auth::check()) {
-            $joined = Auth::user()->ecas->contains($eca->id);
+       if (Auth::check()) {
+            $joined = EcaUser::where('user_id', Auth::id())
+                             ->where('eca_id', $id)
+                             ->exists();
         }
 
         return view('eca.show', compact('eca', 'joined'));
     }
 
-    // Join ECA
-    public function join($id)
+    /**
+     * Student enrolls in an ECA
+     */
+    public function enroll($id)
     {
-        EcaUser::firstOrCreate([
-            'user_id' => Auth::id(),
-            'eca_id'  => $id,
+        $userId = Auth::id();
+
+        // Prevent duplicate join
+        $exists = EcaUser::where('user_id', $userId)
+                         ->where('eca_id', $id)
+                         ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'You already joined this ECA.');
+        }
+
+        EcaUser::create([
+            'user_id' => $userId,
+            'eca_id'  => $id
         ]);
 
-        return redirect()->back()->with('success', 'Successfully joined ECA!');
+        return redirect()->route('eca.my')->with('success', 'Successfully joined this ECA!');
     }
 
     // Show user's joined ECAs
