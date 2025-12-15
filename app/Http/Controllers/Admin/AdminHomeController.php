@@ -20,3 +20,4 @@ class AdminHomeController extends Controller
         return view('admin.dashboard', compact('pendingRegistrations','pendingEnrollments','totalEcas','openQueries'));
     }
 }
+?>

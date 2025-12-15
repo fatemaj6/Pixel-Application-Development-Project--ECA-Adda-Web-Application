@@ -31,7 +31,7 @@ class RegistrationController extends Controller
         $user->payment_status = $user->payment_status ?: 'paid'; // adjust as needed
         $user->save();
 
-        Mail::to($user->email)->send(new RegistrationApproved($user));
+        //Mail::to($user->email)->send(new RegistrationApproved($user));
 
         return redirect()->route('admin.registrations.index')->with('success','User approved and notified.');
     }

@@ -38,8 +38,9 @@ class User extends Authenticatable
         'interests'         => 'array', // ✅ automatically cast JSON to array
     ];
 
-    public function ecas()
-    {
-        return $this->belongsToMany(\App\Models\ECA::class, 'eca_user', 'user_id', 'eca_id');
-    }
+    public function ecaEnrollments()
+{
+    return $this->hasMany(\App\Models\EcaEnrollment::class);
+}
+
 }

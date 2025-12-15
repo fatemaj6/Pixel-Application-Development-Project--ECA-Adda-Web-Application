@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Mail\OtpMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class LoginController extends Controller
@@ -19,13 +20,22 @@ class LoginController extends Controller
     public function sendOtp(Request $request)
     {
         $request->validate([
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user) {
-            return back()->withErrors(['email' => 'No account found for this email. Please register first.']);
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+        return back()->withErrors([
+            'email' => 'Invalid email or password.'
+        ])->withInput();
+        }
+
+        if ($user->registration_status !== 'approved') {
+        return back()->withErrors([
+        'email' => 'Your registration is not approved yet. Please wait for admin approval.'
+        ]);
         }
 
         $otp = rand(100000, 999999);

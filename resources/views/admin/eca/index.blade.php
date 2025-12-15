@@ -7,7 +7,7 @@
         {{-- Header --}}
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Manage ECAs</h1>
-            <a href="{{ route('eca.create') }}" 
+            <a href="{{ route('admin.ecas.create') }}" 
                class="px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition">
                 Add New ECA
             </a>
@@ -54,12 +54,12 @@
 
                         {{-- Actions --}}
                         <div class="mt-4 flex gap-2">
-                            <a href="{{ route('eca.edit', $eca->id) }}" 
+                            <a href="{{ route('admin.ecas.edit', $eca->id) }}" 
                                class="flex-1 text-center px-3 py-2 bg-yellow-400 text-white rounded-lg font-medium hover:bg-yellow-500 transition">
                                 Edit
                             </a>
 
-                            <form action="{{ route('eca.destroy', $eca->id) }}" method="POST" class="flex-1"
+                            <form action="{{ route('admin.ecas.destroy', $eca->id) }}" method="POST" class="flex-1"
                                   onsubmit="return confirm('Are you sure you want to delete this ECA?');">
                                 @csrf
                                 @method('DELETE')

@@ -9,16 +9,18 @@ use App\Models\EcaEnrollment;
 class EnrollmentController extends Controller
 {
     public function index()
-    {
-        $enrollments = EcaEnrollment::with('user','eca')->orderBy('created_at','desc')->paginate(20);
-        return view('admin.enrollments.index', compact('enrollments'));
-    }
+{
+    $enrollments = EcaEnrollment::with(['user','eca'])
+        ->where('status', 'pending')
+        ->get();
 
-    public function markDone(EcaEnrollment $enrollment)
-    {
-        $enrollment->status = 'done';
-        $enrollment->save();
+    return view('admin.enrollments.index', compact('enrollments'));
+}
 
-        return back()->with('success','Enrollment marked done.');
-    }
+public function markDone(EcaEnrollment $enrollment)
+{
+    $enrollment->update(['status' => 'approved']);
+
+    return back()->with('success', 'Enrollment approved.');
+}
 }

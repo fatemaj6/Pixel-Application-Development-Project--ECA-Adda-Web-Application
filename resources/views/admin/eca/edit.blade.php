@@ -13,7 +13,7 @@
             </div>
         @endif
 
-        <form action="{{ route('eca.update', $eca->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6 bg-white p-6 rounded-xl shadow border">
+        <form action="{{ route('admin.ecas.update', $eca->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6 bg-white p-6 rounded-xl shadow border">
             @csrf
             @method('PUT')
 

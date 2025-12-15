@@ -38,7 +38,7 @@ class AdminEcaController extends Controller
             'short_description' => 'required|string',
             'full_description'  => 'required|string',
             'instructor'        => 'nullable|string|max:255',
-            'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if ($request->hasFile('thumbnail')) {
@@ -48,7 +48,7 @@ class AdminEcaController extends Controller
 
         Eca::create($data);
 
-        return redirect()->route('admin.eca.index')
+        return redirect()->route('admin.ecas.index')
             ->with('success', 'ECA created successfully.');
     }
 
@@ -75,7 +75,7 @@ class AdminEcaController extends Controller
             'short_description' => 'required|string',
             'full_description'  => 'required|string',
             'instructor'        => 'nullable|string|max:255',
-            'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if ($request->hasFile('thumbnail')) {
@@ -91,7 +91,7 @@ class AdminEcaController extends Controller
 
         $eca->update($data);
 
-        return redirect()->route('admin.eca.index')
+        return redirect()->route('admin.ecas.index')
             ->with('success', 'ECA updated successfully.');
     }
 
@@ -109,7 +109,7 @@ class AdminEcaController extends Controller
 
         $eca->delete();
 
-        return redirect()->route('admin.eca.index')
+        return redirect()->route('admin.ecas.index')
             ->with('success', 'ECA deleted successfully.');
     }
 }

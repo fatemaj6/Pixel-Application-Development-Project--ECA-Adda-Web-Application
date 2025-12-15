@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 // Controllers
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\OtpController;
@@ -36,6 +38,10 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 */
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'sendOtp'])->name('login.sendOtp');
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 Route::get('/login/otp', [LoginController::class, 'showOtpForm'])->name('login.otp');
 Route::post('/login/verify', [OtpController::class, 'verifyOtp'])->name('login.verify');
 
@@ -80,9 +86,6 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     Route::get('/subscription', [ProfileController::class, 'subscription'])->name('dashboard.subscription');
     Route::get('/security', [ProfileController::class, 'security'])->name('dashboard.security');
     Route::put('/security', [ProfileController::class, 'updatePassword'])->name('dashboard.password.update');
-
-    // AI Advisor (if you have AIController)
-    Route::get('/aidash', [\App\Http\Controllers\AIController::class, 'index'])->name('dashboard.aidash');
 
     // ECAs
     Route::get('/ecas', [ECAController::class, 'index'])->name('dashboard.ecas');
@@ -140,3 +143,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login/otp', [AdminLoginController::class, 'showOtpForm'])->name('login.otp');
     Route::post('/login/verify', [AdminLoginController::class, 'verifyOtp'])->name('login.verify');
 });
+// admin log out
+Route::post('/admin/logout', function () {
+    Auth::guard('admin')->logout();
+    return redirect('/admin/login')->with('success', 'Logged out successfully.');
+})->name('admin.logout');

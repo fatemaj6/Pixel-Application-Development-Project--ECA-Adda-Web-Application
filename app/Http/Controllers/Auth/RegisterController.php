@@ -84,6 +84,7 @@ class RegisterController extends Controller
             'education_level' => $data['education_level'] ?? null,
             'package_type' => $data['package_type'] ?? 'tier2',
             'payment_status' => 'pending',
+            'registration_status' => 'pending',
             'password' => Hash::make($data['password']),
             'role' => 'user',
         ]);
@@ -92,9 +93,10 @@ class RegisterController extends Controller
         $request->session()->forget('register.data');
 
         // login the user
-        Auth::login($user);
-
-        return redirect('/')->with('success', 'Registration complete. Welcome!');
+        return redirect()->route('login')->with(
+        'success',
+        'Registration submitted successfully. Please wait for admin approval before logging in.'
+        );
     }
 }
 ?>

@@ -13,7 +13,7 @@
     <nav class="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
         <div class="max-w-7xl mx-auto flex items-center justify-between py-4 px-6">
             <div class="flex items-center gap-2">
-                <img src="/landing/images/logo.png" class="w-8" alt="logo">
+                <a href="{{ route('landing') }}"><img src="/landing/images/logo.png" class="w-8" alt="logo"></a>
                 <span class="font-semibold text-lg text-orange-600">ECA Adda</span>
             </div>
 

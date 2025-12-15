@@ -20,8 +20,6 @@
                         @csrf
                         <button class="px-3 py-1 bg-green-600 text-white rounded text-sm">Approve</button>
                     </form>
-
-                    <a href="{{ route('admin.registrations.show', $user) }}" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm">Details</a>
                 </div>
             </div>
         @endforeach
