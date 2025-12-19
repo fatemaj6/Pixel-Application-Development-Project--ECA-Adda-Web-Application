@@ -47,7 +47,7 @@
             <x-dashboard-card 
                 title="1-to-1 Session" 
                 text="Book personalized guidance" 
-                route="calendar.sessions" 
+                route="dashboard.session" 
                 button="Book Session" 
             />
         @endif

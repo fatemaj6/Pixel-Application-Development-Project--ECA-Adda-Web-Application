@@ -16,6 +16,7 @@ use App\Http\Controllers\ECAController;
 use App\Http\Controllers\OneToOneController;
 use App\Http\Controllers\SessionController; 
 use App\Http\Controllers\GeminiTestController; 
+use App\Http\Controllers\PaymentController;
 
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\ProfileController;
@@ -172,4 +173,14 @@ Route::post('/admin/logout', function () {
     Auth::guard('admin')->logout();
     return redirect('/admin/login')->with('success', 'Logged out successfully.');
 })->name('admin.logout');
+
+//Payment Routes
+Route::post('/payment/checkout', [PaymentController::class, 'checkout'])
+    ->name('payment.checkout');
+
+Route::get('/payment/success', [PaymentController::class, 'success'])
+    ->name('payment.success');
+
+Route::get('/payment/cancel', [PaymentController::class, 'cancel'])
+    ->name('payment.cancel');
 ?>

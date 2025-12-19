@@ -9,7 +9,7 @@ class OneToOneController extends Controller
     // Show booking form
     public function create()
     {
-        return view('dashboard.sessions'); // matches your preexisting Blade
+        return view('dashboard.session');
     }
 
     // Handle booking submission
