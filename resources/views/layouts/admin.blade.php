@@ -2,27 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel · ECA Adda</title>
+    @vite('resources/css/app.css')
 </head>
-<body class="bg-gray-100">
 
-    {{-- Admin Navbar --}}
-    <nav class="bg-white border-b shadow-sm px-6 py-4 flex justify-between items-center">
-        <h1 class="text-lg font-bold text-orange-600">Admin Dashboard</h1>
+<body class="bg-gray-100 text-gray-900">
+    @include('components.admin-navbar')
 
-        <form action="{{ route('admin.logout') }}" method="POST">
-            @csrf
-            <button class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900">
-                Logout
-            </button>
-        </form>
-    </nav>
-
-    {{-- Page Content --}}
-    <main class="py-8">
+    <main class="py-10">
         @yield('content')
     </main>
 
+    @if(session('status'))
+        <div class="max-w-7xl mx-auto px-6 mt-6">
+            <div class="bg-green-50 border border-green-200 text-green-800 p-3 rounded">
+                {{ session('status') }}
+            </div>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="max-w-7xl mx-auto px-6 mt-6">
+            <div class="bg-red-50 border border-red-200 text-red-800 p-3 rounded">
+                <ul class="list-disc pl-5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
+    @include('components.footer')
 </body>
 </html>
