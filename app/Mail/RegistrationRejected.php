@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -13,20 +12,13 @@ class RegistrationRejected extends Mailable
 {
     use Queueable, SerializesModels;
 
- public $user;
-    public $refundInfo;
+    public $user;
+    public $notes;
 
-    public function __construct($user, $refundInfo = null)
+    public function __construct($user, $notes = null)
     {
         $this->user = $user;
-        $this->refundInfo = $refundInfo;
-    }
-
-    public function build()
-    {
-        return $this->subject('Registration Rejected - Refund Initiated')
-                    ->view('emails.registration.rejected')
-                    ->with(['user' => $this->user, 'refundInfo' => $this->refundInfo]);
+        $this->notes = $notes;
     }
     /**
      * Get the message envelope.
@@ -34,7 +26,7 @@ class RegistrationRejected extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Registration Rejected',
+            subject: 'Registration Rejected - ECA Adda',
         );
     }
 
@@ -44,7 +36,8 @@ class RegistrationRejected extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.registration.rejected',
+            with: ['user' => $this->user, 'notes' => $this->notes],
         );
     }
 

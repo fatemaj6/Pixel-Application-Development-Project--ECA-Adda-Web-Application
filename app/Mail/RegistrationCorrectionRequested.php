@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -22,20 +21,13 @@ class RegistrationCorrectionRequested extends Mailable
         $this->notes = $notes;
     }
 
-    public function build()
-    {
-        return $this->subject('Correction requested for your registration')
-                    ->view('emails.registration.correction')
-                    ->with(['user' => $this->user, 'notes' => $this->notes]);
-    }
-
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '',
+            subject: 'Correction requested for your registration',
         );
     }
 
@@ -45,7 +37,8 @@ class RegistrationCorrectionRequested extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.registration.correction',
+            with: ['user' => $this->user, 'notes' => $this->notes],
         );
     }
 
