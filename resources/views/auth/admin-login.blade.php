@@ -24,6 +24,13 @@
                class="w-full border rounded p-2 mb-4 focus:ring-2 focus:ring-orange-400"
                required>
 
+        <div>
+        <label class="block text-sm font-medium text-gray-700">Password</label>
+        <input name="password" type="password" required
+               class="mt-1 block w-full rounded-md border-gray-200 shadow-sm">
+        @error('password') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
+    </div>
+
         <button class="w-full bg-orange-500 text-white py-2 rounded-lg
                        hover:bg-orange-600 transition duration-200">
             Send OTP

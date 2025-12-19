@@ -134,7 +134,7 @@ Route::prefix('admin')->middleware(['auth:admin'])->name('admin.')->group(functi
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN LOGIN (OTP)
+| ADMIN LOGIN (OTP) AND LOGOUT
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->group(function () {

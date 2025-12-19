@@ -12,16 +12,16 @@
             <div class="grid gap-4 md:grid-cols-2">
                 <label class="border rounded-lg p-4 cursor-pointer hover:shadow-lg group">
                     <input type="radio" name="package_type" value="tier1" class="hidden" required>
-                    <div class="font-bold text-lg">Tier 1 — Premium</div>
-                    <p class="text-gray-600 mt-1">Lifetime access + one-to-one sessions + personal mentorship</p>
-                    <div class="mt-4 text-orange-500 font-semibold">Price: (To be added later)</div>
+                    <div class="font-bold text-lg">Tier 1 — Standard</div>
+                    <p class="text-gray-600 mt-1">Lifetime access to all ECAs (no 1:1 sessions)</p>
+                    <div class="mt-4 text-orange-500 font-semibold">Price: BDT 700tk</div>
                 </label>
 
                 <label class="border rounded-lg p-4 cursor-pointer hover:shadow-lg group">
                     <input type="radio" name="package_type" value="tier2" class="hidden" required>
-                    <div class="font-bold text-lg">Tier 2 — Standard</div>
-                    <p class="text-gray-600 mt-1">Lifetime access to all ECAs (no 1:1 sessions)</p>
-                    <div class="mt-4 text-orange-500 font-semibold">Price: (To be added later)</div>
+                    <div class="font-bold text-lg">Tier 2 — Premium</div>
+                    <p class="text-gray-600 mt-1">Lifetime access + one-to-one sessions + personal mentorship</p>
+                    <div class="mt-4 text-orange-500 font-semibold">Price: BDT 1000tk</div>
                 </label>
             </div>
 
