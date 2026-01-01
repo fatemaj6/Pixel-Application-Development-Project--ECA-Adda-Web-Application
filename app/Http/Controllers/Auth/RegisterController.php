@@ -64,7 +64,13 @@ class RegisterController extends Controller
 
         $data = $request->session()->get('register.data');
 
-        return view('auth.register-step3', compact('data'));
+        if (!isset($data['package_type'])) {
+            return redirect()->route('register.step2');
+        }
+
+        $amount = $data['package_type'] === 'tier1' ? 700 : 1000;
+
+        return view('auth.register-step3', compact('data', 'amount'));
     }
 
 public function complete(Request $request)
@@ -95,8 +101,10 @@ public function complete(Request $request)
     $request->session()->forget('register.data');
 
     // ✅ now auth middleware will pass
-    return redirect()->route('payment.checkout');
+    return app(\App\Http\Controllers\PaymentController::class)->createSession();
 }
 
 }
 ?>
+
+
