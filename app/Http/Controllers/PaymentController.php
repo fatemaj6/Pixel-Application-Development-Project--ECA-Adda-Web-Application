@@ -83,8 +83,8 @@ public function success(Request $request)
 
     session()->forget('register.data');
 
-    return redirect()->route('dashboard.index')
-        ->with('success', 'Payment successful! Registration completed 🎉');
+    return redirect()->route('login')
+        ->with('success', 'Payment successful! Registration completed.');
 }
 
 public function cancel()
