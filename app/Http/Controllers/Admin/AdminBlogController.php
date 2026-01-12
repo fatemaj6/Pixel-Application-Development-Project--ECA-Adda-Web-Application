@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Blog; 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class AdminBlogController extends Controller
 {
@@ -35,7 +36,7 @@ class AdminBlogController extends Controller
             'excerpt' => Str::limit(strip_tags($request->content), 150),
             'content' => $request->content,
             'thumbnail' => $path,
-            'author_id' => auth()->id(),
+            'author_id' => Auth::guard('admin')->id(),
         ]);
 
         return redirect()->route('admin.blogs.index')->with('success', 'Blog posted!');

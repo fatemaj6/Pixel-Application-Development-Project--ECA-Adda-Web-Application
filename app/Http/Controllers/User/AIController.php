@@ -34,12 +34,17 @@ class AIController extends Controller
         try {
             $user = $request->user();
             $ecas = Eca::query()
-                ->select('title', 'category', 'level', 'short_description', 'full_description')
+                ->select('id', 'title', 'category', 'level', 'instructor', 'short_description', 'full_description')
                 ->orderBy('title')
                 ->get();
 
             if ($this->isRecommendationRequest($userMessage)) {
-                $reply = $this->buildRecommendationReply($userMessage, $user, $ecas);
+                $reply = $this->buildRecommendationReply($userMessage, $user, $ecas, $request);
+                return response()->json(['reply' => $reply]);
+            }
+
+            if ($this->isEcaDetailRequest($userMessage, $ecas)) {
+                $reply = $this->buildEcaDetailReply($userMessage, $request, $ecas);
                 return response()->json(['reply' => $reply]);
             }
 
@@ -106,8 +111,9 @@ class AIController extends Controller
         $ecaLines = $ecas->map(function ($eca) {
             $category = $eca->category ?: 'General';
             $level = $eca->level ?: 'Beginner';
+            $instructor = $eca->instructor ?: 'TBA';
             $description = $eca->short_description ?: $eca->full_description ?: 'No description provided.';
-            return "- {$eca->title} | Category: {$category} | Level: {$level} | {$description}";
+            return "- {$eca->title} | Category: {$category} | Level: {$level} | Instructor: {$instructor} | {$description}";
         })->implode("\n");
 
         if ($ecaLines === '') {
@@ -118,13 +124,12 @@ class AIController extends Controller
             'You are the ECA Adda AI Advisor.',
             'Use only the ECAs listed under Available ECAs. Do not invent or rename ECAs.',
             'If the user asks about ECAs that are not listed, say they are not currently offered and suggest the closest match from the list.',
-            'When the user asks for recommendations, suggest 3-5 ECAs with short reasons and include category and level.',
+            'When the user asks for recommendations, reply with: "Based on your preferences, these ECAs will suit you:" followed by a numbered list of 3-5 ECA titles.',
+            'When the user asks for more details about a specific ECA, respond with: "This ECA is of difficulty level {low/intermediate/high} and it is taught by {instructor name}."',
+            'Map difficulty from level: Beginner -> low, Intermediate -> intermediate, Advanced -> high.',
             'Match suggestions to the user\'s interests and education level. Prefer details from the user\'s message over the profile if they conflict.',
             'If interests or education level are missing, ask one short follow-up question before recommending.',
             'Do not list the full catalog unless the user asks for it.',
-            'When explaining an ECA, paraphrase its description in your own words and avoid quoting it verbatim.',
-            'Formatting for recommendations:',
-            '1) Title (Category: X, Level: Y) - Short reason.',
             'Keep responses concise and plain text.',
             'Education level guidance:',
             '- grade6-8: prioritize Beginner; avoid Advanced unless explicitly requested.',
@@ -168,7 +173,90 @@ class AIController extends Controller
         return false;
     }
 
-    private function buildRecommendationReply(string $message, $user, $ecas): string
+    private function isEcaDetailRequest(string $message, $ecas): bool
+    {
+        $message = strtolower($message);
+        $hasGenericEcaReference = str_contains($message, 'eca')
+            || str_contains($message, 'club')
+            || str_contains($message, 'activity');
+
+        if (str_contains($message, 'this eca')
+            || str_contains($message, 'this club')
+            || str_contains($message, 'this activity')
+        ) {
+            return true;
+        }
+
+        foreach ($ecas as $eca) {
+            $title = strtolower((string) $eca->title);
+            if ($title !== '' && str_contains($message, $title)) {
+                return true;
+            }
+        }
+
+        $detailKeywords = [
+            'tell me more',
+            'more about',
+            'details',
+            'detail',
+            'difficulty',
+            'instructor',
+            'teacher',
+            'coach',
+        ];
+
+        if ($hasGenericEcaReference) {
+            foreach ($detailKeywords as $keyword) {
+                if (str_contains($message, $keyword)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function buildEcaDetailReply(string $message, Request $request, $ecas): string
+    {
+        $eca = $this->findEcaInMessage($message, $ecas);
+
+        if (! $eca) {
+            $lastEcaId = $request->session()->get('ai_last_eca_id');
+            if ($lastEcaId) {
+                $eca = $ecas->firstWhere('id', $lastEcaId);
+            }
+        }
+
+        if (! $eca) {
+            $lastRecommendations = $request->session()->get('ai_last_recommendations', []);
+            if (! empty($lastRecommendations)) {
+                $eca = $ecas->firstWhere('id', $lastRecommendations[0]);
+            }
+        }
+
+        if (! $eca) {
+            return 'Which ECA would you like to know more about? Please mention its name.';
+        }
+
+        $request->session()->put('ai_last_eca_id', $eca->id);
+
+        $difficulty = $this->difficultyForLevel($eca->level);
+        $instructor = $eca->instructor ?: 'TBA';
+
+        return "This ECA is of difficulty level {$difficulty} and it is taught by {$instructor}.";
+    }
+
+    private function findEcaInMessage(string $message, $ecas): ?Eca
+    {
+        $message = strtolower($message);
+
+        return $ecas->first(function ($eca) use ($message) {
+            $title = strtolower((string) $eca->title);
+            return $title !== '' && str_contains($message, $title);
+        });
+    }
+
+    private function buildRecommendationReply(string $message, $user, $ecas, Request $request): string
     {
         $educationLevel = $user?->education_level;
         $allowedLevels = $this->allowedLevelsForEducation($educationLevel);
@@ -188,42 +276,32 @@ class AIController extends Controller
             $shortDescription = strtolower((string) ($eca->short_description ?? ''));
             $fullDescription = strtolower((string) ($eca->full_description ?? ''));
             $level = $this->normalizeLevel($eca->level);
-            $description = $eca->short_description ?: $eca->full_description ?: '';
 
             $score = 0;
-            $matched = [];
 
             foreach ($keywords as $keyword) {
-                $matchedHere = false;
+                if ($keyword === '') {
+                    continue;
+                }
 
-                if ($keyword !== '' && str_contains($title, $keyword)) {
+                if (str_contains($title, $keyword)) {
                     $score += 3;
-                    $matchedHere = true;
                 }
 
-                if ($keyword !== '' && str_contains($category, $keyword)) {
+                if (str_contains($category, $keyword)) {
                     $score += 2;
-                    $matchedHere = true;
                 }
 
-                if ($keyword !== '' && (str_contains($shortDescription, $keyword) || str_contains($fullDescription, $keyword))) {
+                if (str_contains($shortDescription, $keyword) || str_contains($fullDescription, $keyword)) {
                     $score += 1;
-                    $matchedHere = true;
-                }
-
-                if ($matchedHere) {
-                    $matched[$keyword] = true;
                 }
             }
 
             return [
+                'id' => $eca->id,
                 'title' => (string) $eca->title,
-                'category' => $eca->category ?: 'General',
-                'level' => $eca->level ?: 'Beginner',
                 'normalized_level' => $level,
                 'score' => $score,
-                'matched' => array_keys($matched),
-                'description' => $description,
             ];
         });
 
@@ -260,33 +338,31 @@ class AIController extends Controller
             ->take(5)
             ->values();
 
-        $lines = ['Here are a few ECAs that fit your interests and level:'];
+        $this->storeRecommendationContext($recommendations, $request);
+
+        $lines = ['Based on your preferences, these ECAs will suit you:'];
         foreach ($recommendations as $index => $eca) {
-            $matched = $eca['matched'];
-            $reason = 'A good fit based on your interests.';
-            $overview = $this->paraphraseDescription($eca['description'] ?? '');
-
-            if (!empty($matched)) {
-                $topic = $matched[0];
-                $reason = "Matches your interest in {$topic}.";
-            } elseif (!empty($eca['category'])) {
-                $reason = "Fits the {$eca['category']} area.";
-            }
-
-            $lines[] = sprintf(
-                '%d) %s (Category: %s, Level: %s) - %s Overview: %s',
-                $index + 1,
-                $eca['title'],
-                $eca['category'],
-                $eca['level'],
-                $reason,
-                $overview
-            );
+            $lines[] = sprintf('%d) %s', $index + 1, $eca['title']);
         }
 
-        $lines[] = 'Want more options or a different focus?';
-
         return implode("\n", $lines);
+    }
+
+    private function storeRecommendationContext($recommendations, Request $request): void
+    {
+        $ids = $recommendations->pluck('id')->values()->all();
+        $request->session()->put('ai_last_recommendations', $ids);
+        $request->session()->put('ai_last_eca_id', $ids[0] ?? null);
+    }
+
+    private function difficultyForLevel(?string $level): string
+    {
+        return match ($this->normalizeLevel($level)) {
+            'advanced' => 'high',
+            'intermediate' => 'intermediate',
+            'beginner' => 'low',
+            default => 'intermediate',
+        };
     }
 
     private function allowedLevelsForEducation(?string $educationLevel): array
@@ -356,45 +432,6 @@ class AIController extends Controller
         }
 
         return $keywords;
-    }
-
-    private function paraphraseDescription(?string $text): string
-    {
-        $text = trim((string) $text);
-
-        if ($text === '') {
-            return 'An engaging activity designed to build practical skills.';
-        }
-
-        $text = preg_replace('/\s+/', ' ', $text);
-        $text = rtrim($text, '.');
-
-        $replacements = [
-            '/\bThis ECA introduces\b/i' => 'This activity gives you a practical introduction to',
-            '/\bLearn the basics of\b/i' => 'Get a hands-on intro to',
-            '/\bStudents work with\b/i' => 'You will work with',
-            '/\bFocuses on\b/i' => 'Centered on',
-            '/\bImprove\b/i' => 'Build',
-            '/\bTurn ideas into\b/i' => 'Take ideas and shape them into',
-            '/\bLearn\b/i' => 'Explore',
-            '/\bthrough\b/i' => 'by using',
-        ];
-
-        foreach ($replacements as $pattern => $replacement) {
-            if (preg_match($pattern, $text)) {
-                $text = preg_replace($pattern, $replacement, $text, 1);
-            }
-        }
-
-        if (strlen($text) > 180) {
-            $text = substr($text, 0, 177) . '...';
-        }
-
-        if (!preg_match('/[.!?]$/', $text)) {
-            $text .= '.';
-        }
-
-        return $text;
     }
 }
 ?>

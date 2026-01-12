@@ -12,9 +12,22 @@ class EnsurePaymentCompleted
     {
         $user = Auth::user();
 
-        if ($user && $user->payment_status !== 'paid') {
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->payment_status !== 'paid') {
             return redirect()->route('payment.checkout')
-                ->with('error', 'Please complete payment to access dashboard.');
+                ->with('status', 'Please complete payment to access the dashboard.');
+        }
+
+        if ($user->registration_status !== 'approved') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->with('status', 'Your registration is pending admin approval.');
         }
 
         return $next($request);

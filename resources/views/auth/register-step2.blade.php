@@ -4,9 +4,9 @@
 <div class="max-w-2xl mx-auto py-12 px-6">
     <div class="bg-white rounded-2xl shadow p-8">
         <h2 class="text-2xl font-bold">Choose your subscription</h2>
-        <p class="text-gray-500 mt-1">Step 2 of 3 — Subscription tier</p>
+        <p class="text-gray-500 mt-1">Step 2 of 2 - Subscription tier</p>
 
-        <form action="{{ route('register.storeStep2') }}" method="POST" class="mt-6 space-y-4">
+        <form action="{{ route('register.storeStep2', [], false) }}" method="POST" class="mt-6 space-y-4">
             @csrf
 
             <div class="grid gap-4 md:grid-cols-2">
@@ -30,7 +30,7 @@
             </div>
 
             <div class="flex justify-between items-center mt-4">
-                <a href="{{ route('register.step1') }}" class="text-sm text-gray-500 hover:text-orange-500">Back</a>
+                <a href="{{ route('register.step1', [], false) }}" class="text-sm text-gray-500 hover:text-orange-500">Back</a>
                 <button type="submit" class="px-6 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600">
                     Continue to Payment
                 </button>

@@ -30,20 +30,24 @@ class RegisterController extends Controller
         // keep in session for next steps
         $request->session()->put('register.data', $data);
 
-        return redirect()->route('register.step2');
+        return redirect()->to(route('register.step2', [], false));
     }
 
     // Step 2 - choose tier
     public function step2(Request $request)
     {
         if (!$request->session()->has('register.data')) {
-            return redirect()->route('register.step1');
+            return redirect()->to(route('register.step1', [], false));
         }
         return view('auth.register-step2');
     }
 
     public function storeStep2(Request $request)
     {
+        if (!$request->session()->has('register.data')) {
+            return redirect()->to(route('register.step1', [], false));
+        }
+
         $data = $request->validate([
             'package_type' => 'required|in:tier1,tier2',
         ]);
@@ -52,59 +56,57 @@ class RegisterController extends Controller
         $session['package_type'] = $data['package_type'];
         $request->session()->put('register.data', $session);
 
-        return redirect()->route('register.step3');
+        return $this->startPayment($request, $session);
     }
 
     // Step 3 - payment placeholder / complete
     public function step3(Request $request)
     {
         if (!$request->session()->has('register.data')) {
-            return redirect()->route('register.step1');
+            return redirect()->to(route('register.step1', [], false));
+        }
+        return redirect()->to(route('register.step2', [], false));
+    }
+
+    public function complete(Request $request)
+    {
+        if (!$request->session()->has('register.data')) {
+            return redirect()->to(route('register.step1', [], false));
         }
 
         $data = $request->session()->get('register.data');
 
-        if (!isset($data['package_type'])) {
-            return redirect()->route('register.step2');
+        return $this->startPayment($request, $data);
+    }
+
+    private function startPayment(Request $request, array $data)
+    {
+        $user = User::where('email', $data['email'])->first();
+
+        if (! $user) {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'institution' => $data['institution'] ?? null,
+                'education_level' => $data['education_level'],
+                'package_type' => $data['package_type'],
+                'payment_status' => 'pending',
+                'registration_status' => 'pending',
+                'password' => Hash::make($data['password']),
+                'role' => 'user',
+            ]);
+        } else {
+            $user->package_type = $data['package_type'] ?? $user->package_type;
+            $user->save();
         }
 
-        $amount = $data['package_type'] === 'tier1' ? 700 : 1000;
+        Auth::login($user);
 
-        return view('auth.register-step3', compact('data', 'amount'));
+        $request->session()->forget('register.data');
+
+        return app(\App\Http\Controllers\PaymentController::class)->createSession();
     }
-
-public function complete(Request $request)
-{
-    if (!$request->session()->has('register.data')) {
-        return redirect()->route('register.step1');
-    }
-
-    $data = $request->session()->get('register.data');
-
-    $user = User::create([
-        'name' => $data['name'],
-        'email' => $data['email'],
-        'phone' => $data['phone'] ?? null,
-        'institution' => $data['institution'] ?? null,
-        'education_level' => $data['education_level'],
-        'package_type' => $data['package_type'],
-        'payment_status' => 'pending',
-        'registration_status' => 'pending',
-        'password' => Hash::make($data['password']),
-        'role' => 'user',
-    ]);
-
-    // ✅ login user BEFORE payment
-    Auth::login($user);
-
-    // clear session
-    $request->session()->forget('register.data');
-
-    // ✅ now auth middleware will pass
-    return app(\App\Http\Controllers\PaymentController::class)->createSession();
-}
 
 }
 ?>
-
-

@@ -5,6 +5,7 @@ use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -78,10 +79,13 @@ public function success(Request $request)
 
     $user->update([
         'payment_status' => 'paid',
-        'registration_status' => 'approved',
     ]);
 
     session()->forget('register.data');
+
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
     return redirect()->route('login')
         ->with('success', 'Payment successful! Registration completed.');

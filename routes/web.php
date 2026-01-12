@@ -242,10 +242,11 @@ Route::middleware('auth')->group(function () {
 
     // ✅ Payment history (NO payment.done)
     Route::get('/dashboard/payments', [PaymentController::class, 'history'])
-    ->name('dashboard.payments');
+        ->middleware('payment.done')
+        ->name('dashboard.payments');
 });
 
-Route::middleware(['auth'])->prefix('dashboard')->group(function () {
+Route::middleware(['auth', 'payment.done'])->prefix('dashboard')->group(function () {
     Route::get('/messages', [UserAdminMessageController::class, 'index'])->name('dashboard.messages');
     Route::post('/messages/{message}/read', [UserAdminMessageController::class, 'markRead'])->name('dashboard.messages.read');
     Route::delete('/messages/{message}', [UserAdminMessageController::class, 'destroy'])->name('dashboard.messages.delete');

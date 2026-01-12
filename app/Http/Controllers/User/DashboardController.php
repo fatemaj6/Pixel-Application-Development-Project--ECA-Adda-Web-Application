@@ -62,7 +62,7 @@ class DashboardController extends Controller
     public function subscription()
     {
         $user = Auth::user();
-        return view('dashboard.subscription', compact('user'));
+        return view('dashboard.profile.subscription', compact('user'));
     }
 
     /**
@@ -70,7 +70,7 @@ class DashboardController extends Controller
      */
     public function security()
     {
-        return view('dashboard.security');
+        return view('dashboard.profile.security');
     }
 
     /**

@@ -21,11 +21,11 @@
         </div>
 
         <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <a href="{{ route('register.step2') }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:border-orange-500 hover:text-orange-500">
+            <a href="{{ route('register.step2', [], false) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:border-orange-500 hover:text-orange-500">
                 Back
             </a>
 
-            <form action="{{ route('register.complete') }}" method="POST">
+            <form action="{{ route('register.complete', [], false) }}" method="POST">
                 @csrf
                 <button class="inline-flex items-center justify-center rounded-lg bg-orange-500 px-6 py-2 font-semibold text-white hover:bg-orange-600">
                     Pay with Stripe
