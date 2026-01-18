@@ -49,7 +49,8 @@ RUN apk add --no-cache \
     sed \
     ca-certificates \
     oniguruma-dev \
-    libxml2-dev
+    libxml2-dev \
+    libpng-dev
 
 # Install PHP extensions in the final image as well
 RUN docker-php-ext-install \
@@ -57,7 +58,8 @@ RUN docker-php-ext-install \
     pdo_mysql \
     mbstring \
     bcmath \
-    xml
+    xml \
+    gd
 
 # Configure Nginx
 COPY nginx.conf /etc/nginx/http.d/default.conf
