@@ -12,8 +12,11 @@ sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/nginx/http.d/default.conf
 # Clear any development caches
 php artisan optimize:clear
 
-# Run migrations and seeders
-php artisan migrate --force --seed
+# Run migrations
+php artisan migrate --force
+
+# Run seeders (separately to ensure they run even if migrations are already done)
+php artisan db:seed --force
 
 # Start PHP-FPM in background
 php-fpm -D

@@ -11,45 +11,48 @@ class EcaSeeder extends Seeder
     {
         $ecas = [
             [
-                'title' => 'AI & Machine Learning Club',
-                'category' => 'Technology',
-                'level' => 'Beginner',
-                'instructor' => 'Dr. Sarah Lee',
-                'short_description' => 'Learn the basics of AI and ML through hands-on projects.',
-                'full_description' => 'This ECA introduces students to artificial intelligence, machine learning models, and practical applications using Python.',
-                'thumbnail' => '/eca-images/ai.webp',
+                'title' => 'Rebellion Club',
+                'category' => 'Music & Arts',
+                'level' => 'All Levels',
+                'instructor' => 'Alex Turner',
+                'short_description' => 'Express yourself through modern music and unconventional arts.',
+                'full_description' => 'The Rebellion Club is for those who dare to be different. We focus on modern music production, street art, and alternative forms of expression. Members collaborate on unique projects that challenge traditional artistic boundaries.',
+                'thumbnail' => '/landing/images/clubs/club1.png',
             ],
             [
-                'title' => 'Robotics & Automation',
-                'category' => 'Engineering',
-                'level' => 'Intermediate',
-                'instructor' => 'Engr. Aiman Rahman',
-                'short_description' => 'Build and program robots from scratch.',
-                'full_description' => 'Students work with Arduino and Raspberry Pi to build autonomous robots and automation systems.',
-                'thumbnail' => '/eca-images/robotics.webp',
+                'title' => 'Painting Club',
+                'category' => 'Visual Arts',
+                'level' => 'Beginner to Intermediate',
+                'instructor' => 'Elena Rossi',
+                'short_description' => 'Master the strokes of classical and contemporary painting.',
+                'full_description' => 'Unleash your inner artist in our Painting Club. We explore various mediums including oil, watercolor, and acrylics. Weekly sessions include guided tutorials, free-painting hours, and guest lectures from local artists.',
+                'thumbnail' => '/landing/images/clubs/club2.png',
             ],
             [
-                'title' => 'Public Speaking & Leadership',
-                'category' => 'Soft Skills',
-                'level' => 'Beginner',
-                'instructor' => 'Ms. Nur Aisyah',
-                'short_description' => 'Improve confidence and leadership skills.',
-                'full_description' => 'Focuses on communication, presentation, and leadership development through weekly activities.',
-                'thumbnail' => '/eca-images/publicSpeaking.jpg',
+                'title' => 'Creative Writing Club',
+                'category' => 'Literature',
+                'level' => 'All Levels',
+                'instructor' => 'Julian Barnes',
+                'short_description' => 'Craft compelling stories, poetry, and scripts.',
+                'full_description' => 'The Creative Writing Club provides a supportive environment for writers of all genres. We host workshops on character development, plot structure, and world-building. Join us to turn your ideas into literary masterpieces.',
+                'thumbnail' => '/landing/images/clubs/club3.png',
             ],
             [
-                'title' => 'Entrepreneurship Bootcamp',
-                'category' => 'Business',
-                'level' => 'Advanced',
-                'instructor' => 'Mr. Daniel Wong',
-                'short_description' => 'Turn ideas into startups.',
-                'full_description' => 'Learn business models, pitching, and startup funding from industry mentors.',
-                'thumbnail' => '/eca-images/enterpreneurship.jpg',
+                'title' => 'Foreign Language Club',
+                'category' => 'Linguistics',
+                'level' => 'Introductory',
+                'instructor' => 'Maria Gonzalez',
+                'short_description' => 'Broaden your horizons by learning new languages and cultures.',
+                'full_description' => 'Dive into the world of linguistics and multiculturalism. Our Foreign Language Club offers introductory courses in Spanish, French, and Japanese. We combine language lessons with cultural activities like food tasting and film screenings.',
+                'thumbnail' => '/landing/images/clubs/club4.png',
             ],
         ];
 
         foreach ($ecas as $eca) {
-            Eca::create($eca);
+            Eca::updateOrCreate(
+                ['title' => $eca['title']],
+                $eca
+            );
         }
     }
 }
