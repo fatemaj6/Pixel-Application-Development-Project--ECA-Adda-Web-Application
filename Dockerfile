@@ -47,6 +47,7 @@ RUN apk add --no-cache \
     nginx \
     bash \
     sed \
+    ca-certificates \
     oniguruma-dev \
     libxml2-dev
 
