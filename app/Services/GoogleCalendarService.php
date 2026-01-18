@@ -14,6 +14,7 @@ class GoogleCalendarService
         $authConfig = env('GOOGLE_SERVICE_ACCOUNT_JSON');
         
         if ($authConfig) {
+            \Log::debug('Google Calendar: Using service account JSON from environment variable.');
             // Strip any accidental slashes or hidden characters from environment variable
             $decoded = json_decode($authConfig, true);
             
@@ -43,17 +44,31 @@ class GoogleCalendarService
 
     public function getCalendarEvents(string $calendarId, int $maxResults = 10)
     {
-        $client = $this->getClient();
-        $service = new Google_Service_Calendar($client);
+        try {
+            $client = $this->getClient();
+            $service = new Google_Service_Calendar($client);
 
-        $events = $service->events->listEvents($calendarId, [
-            'maxResults'   => $maxResults,
-            'orderBy'      => 'startTime',
-            'singleEvents' => true,
-            'timeMin'      => now()->toRfc3339String(),
-        ]);
+            $events = $service->events->listEvents($calendarId, [
+                'maxResults'   => $maxResults,
+                'orderBy'      => 'startTime',
+                'singleEvents' => true,
+                'timeMin'      => now()->toRfc3339String(),
+            ]);
 
-        return $events->getItems();
+            return $events->getItems();
+        } catch (\Exception $e) {
+            \Log::error('Google Calendar Service Exception: ' . $e->getMessage(), [
+                'calendar_id' => $calendarId,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Re-throw or return empty based on preference. 
+            // Better to re-throw for a 500 so we know it's failing, 
+            // but the log will tell us WHY.
+            throw $e;
+        }
     }
 }
 ?>
