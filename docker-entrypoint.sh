@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Clear Laravel config so it reads Railway env vars (Brevo fix)
+# Clear Laravel config so it reads Railway env vars
 php artisan config:clear
 
 # Update Nginx port with Railway's dynamic $PORT
@@ -9,13 +9,32 @@ if [ -z "$PORT" ]; then
 fi
 sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/nginx/http.d/default.conf
 
+# -----------------------------------------------------------------------------
+# RAILWAY VOLUME FIX: Re-create storage structure if hidden by volume mount
+# -----------------------------------------------------------------------------
+echo "Ensuring storage directories exist..."
+mkdir -p /app/storage/framework/{sessions,views,cache}
+mkdir -p /app/storage/logs
+mkdir -p /app/bootstrap/cache
+mkdir -p /app/storage/app/public/thumbnails
+
+# Fix permissions for the storage directory (critical for volume mounts)
+echo "Fixing storage permissions..."
+chmod -R 777 /app/storage /app/bootstrap/cache
+
+# Create the symbolic link for public storage
+echo "Creating storage symlink..."
+php artisan storage:link
+
+# -----------------------------------------------------------------------------
+
 # Clear any development caches
 php artisan optimize:clear
 
 # Run migrations
 php artisan migrate --force
 
-# Run seeders (separately to ensure they run even if migrations are already done)
+# Run seeders
 php artisan db:seed --force
 
 # Start PHP-FPM in background
