@@ -81,8 +81,9 @@ RUN mkdir -p /app/storage/framework/{sessions,views,cache} \
     && chmod -R 777 /app/storage /app/bootstrap/cache
 
 # Copy startup script
+# Copy startup script
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh && sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
 
