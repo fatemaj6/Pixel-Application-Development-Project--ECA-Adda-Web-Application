@@ -25,6 +25,7 @@ sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/nginx/http.d/default.conf
 
 # Create the symbolic link for public storage
 echo "Creating storage symlink..."
+rm -rf /app/public/storage
 php artisan storage:link
 
 # Clear any development caches
@@ -37,11 +38,11 @@ php artisan migrate --force
 php artisan db:seed --force
 
 # -----------------------------------------------------------------------------
-# FINAL PERMISSION FIX: Ensure www-data owns everything created by root above
+# FINAL PERMISSION FIX: Force 777 on everything to ensure access
 # -----------------------------------------------------------------------------
-echo "Finalizing permissions for www-data..."
+echo "Finalizing permissions..."
 chown -R www-data:www-data /app/storage /app/bootstrap/cache
-chmod -R 775 /app/storage /app/bootstrap/cache
+chmod -R 777 /app/storage /app/bootstrap/cache
 
 # Start PHP-FPM in background
 php-fpm -D
