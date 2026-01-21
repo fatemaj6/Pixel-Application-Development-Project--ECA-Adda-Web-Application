@@ -9,10 +9,13 @@ ECA Adda is a Laravel-based web application that allows students to explore and 
 ## 🛠️ Tech Stack
 
 * *Backend:* Laravel 12 (PHP 8.2)
-* *Frontend:* Blade + Tailwind CSS + Vite
+* *Frontend:* Blade + Node.js + Vite 
 * *Database:* MySQL (via XAMPP)
-* *Payment Gateway:* Stripe
-* *Authentication:* Email OTP (Students & Admins) - Brevo
+* *Payment Gateway:* Stripe Sandbox
+* *AI Chatbot:* Google Gemini
+* *One-to-One Session:* Calendly
+* *Personalized Calendar:* Google Calendar
+* *Authentication:* Email OTP with Brevo
 
 ---
 
@@ -39,7 +42,7 @@ git clone <repository-url>
 cd ECA-Adda
 
 
-If using ZIP (better since several necessary files are not uploaded in github):
+If using ZIP (better since several necessary files are not uploaded to GitHub):
 
 * Extract the project folder
 * Open the folder in *VS Code*
@@ -165,9 +168,10 @@ http://127.0.0.1:8000
 
 ### 👩‍🎓 Student
 
-* Register with OTP
-* Select Tier (Tier 1 / Tier 2)
+* Register with Admin's Approval
+* Select Subscription Tier (Tier 1 / Tier 2)
 * Make payment via Stripe
+* Login with OTP
 * Browse & enroll in ECAs
 * View enrolled ECAs
 
@@ -178,32 +182,7 @@ http://127.0.0.1:8000
 * View student enrollments
 * Approve registrations
 
----
 
-## 💳 Payment Module (Stripe)
-
-* Two tiers: *Tier 1 & Tier 2*
-* Stripe Checkout Session is used
-* On successful payment:
-
-  * User is marked as paid
-  * Tier is stored in database
-* On failure/cancel:
-
-  * No data is updated
-
----
-
-## 🧪 Testing Checklist
-
-* ✅ Registration with OTP
-* ✅ Login with OTP
-* ✅ Stripe test payment
-* ✅ Tier assignment
-* ✅ ECA enrollment
-* ✅ Admin CRUD operations
-
-Stripe test card:
 
 
 Card Number: 4242 4242 4242 4242
