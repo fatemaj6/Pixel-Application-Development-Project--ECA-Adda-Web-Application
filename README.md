@@ -122,7 +122,7 @@ npm run dev
 
 ### 9️⃣ Run the Application
 
-bash
+
 php artisan serve
 
 
