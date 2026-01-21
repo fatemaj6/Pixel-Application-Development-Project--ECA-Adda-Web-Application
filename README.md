@@ -65,39 +65,9 @@ npm install
 ### 4️⃣ Environment Configuration
 
 Create .env file:
-
-
 copy .env.example .env
 
-
-Update .env with your local configuration (submitted our env variables as a doc with other project documents)
-
-env
-APP_NAME=ECAAdda
-APP_ENV=local
-APP_KEY=
-APP_DEBUG=true
-APP_URL=http://127.0.0.1:8000
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=eca_adda
-DB_USERNAME=root
-DB_PASSWORD=
-
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=your_email@gmail.com
-MAIL_PASSWORD=your_app_password
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=your_email@gmail.com
-MAIL_FROM_NAME="ECA Adda"
-
-STRIPE_KEY=pk_test_xxxxxxxxxxxxx
-STRIPE_SECRET=sk_test_xxxxxxxxxxxxx
-
+Update .env with your local configuration (submitted our .env variables as a doc with other project documents)
 
 ---
 
@@ -183,9 +153,4 @@ http://127.0.0.1:8000
 * Approve registrations
 
 
-
-
-Card Number: 4242 4242 4242 4242
-Expiry: Any future date
-CVC: Any 3 digits
 
