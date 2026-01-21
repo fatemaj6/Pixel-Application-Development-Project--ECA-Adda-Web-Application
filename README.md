@@ -82,21 +82,13 @@ php artisan key:generate
 1. Open *XAMPP Control Panel*
 2. Start *Apache* and *MySQL*
 3. Open *phpMyAdmin*
-4. Create a database named:
-
-   
-   eca_adda
+4. Create a database named:  eca_adda
    
 
-Run migrations:
+Run migrations and seeders:
 
 
 php artisan migrate
-
-
-(Optional – if seeders exist):
-
-
 php artisan db:seed
 
 
